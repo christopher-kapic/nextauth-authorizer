@@ -4,7 +4,6 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env/server.mjs";
 import { prisma } from "./db";
@@ -47,10 +46,30 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    {
+      id: "authorizer",
+      name: "Authorizer",
+      type: "oauth",
+      version: "2.0",
+      clientId: env.AUTHORIZER_CLIENT_ID,
+      clientSecret: env.AUTHORIZER_CLIENT_SECRET,
+      wellKnown: `${env.AUTHORIZER_CLIENT_URL}/.well-known/openid-configuration`,
+      authorization: {
+        params: {
+          scope: "openid email profile",
+        }
+      },
+      checks: ['pkce', 'state'],
+      profileUrl: `${env.AUTHORIZER_CLIENT_URL}/userinfo`,
+      profile(profile) {
+        return {
+          name: profile.nickname ?? profile.given_name ?? profile.preferred_username ?? "",
+          id: profile.sub,
+          email: profile.email,
+          image: profile.picture,
+        }
+      },
+    }
     /**
      * ...add more providers here
      *

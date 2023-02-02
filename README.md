@@ -1,28 +1,52 @@
-# Create T3 App
+# Next-Auth with Authorizer
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This repo was created to help debug using Authorizer oauth with Next-Auth.
 
-## What's next? How do I make an app with this?
+### Helpful resources
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- [Adding a custom oauth provider in Next-Auth](https://next-auth.js.org/configuration/providers/oauth#using-a-custom-provider)
+- [Authorizer API endpoints](https://docs.authorizer.dev/core/endpoints)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+To get started, run the following commands:
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+`git clone https://github.com/christopher-kapic/nextauth-authorizer.git`
 
-## Learn More
+`cd nextauth-authorizer`
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+`cp .env.example .env`
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+Edit the environment variables in `.env` to match your authorizer instance.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+```
+AUTHORIZER_CLIENT_ID="authorizer-client-id"
+AUTHORIZER_CLIENT_SECRET="authorizer-client-secret"
+AUTHORIZER_CLIENT_URL="https://demo.authorizer.dev"
+```
 
-## How do I deploy this?
+`npm install; npx prisma db generate; npx prisma db push;`
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+`npm run dev`
+
+Navigate to the [sign in page](http://localhost:3000/api/auth/signin) and try signing in with Authorizer.
+
+You can see the frontend logs in the web browser console, and the backend logs in the terminal.
+
+The error I was getting was `LinkAccountError`:
+
+```
+Unknown arg `roles` in data.roles for type AccountUncheckedCreateInput. Did you mean `type`? Available args:
+type AccountUncheckedCreateInput {
+  id?: String
+  userId: String
+  type: String
+  provider: String
+  providerAccountId: String
+  refresh_token?: String | Null
+  access_token?: String | Null
+  expires_at?: Int | Null
+  token_type?: String | Null
+  scope?: String | Null
+  id_token?: String | Null
+  session_state?: String | Null
+}
+```

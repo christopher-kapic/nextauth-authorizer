@@ -29,6 +29,12 @@ declare module "next-auth" {
   // }
 }
 
+const adapter = {
+  ...PrismaAdapter(prisma),
+  //@ts-ignore
+  linkAccount: ({ roles, ...data }) => prisma.account.create({ data }),
+};
+
 /**
  * Options for NextAuth.js used to configure
  * adapters, providers, callbacks, etc.
@@ -44,7 +50,8 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  adapter: PrismaAdapter(prisma),
+  // @ts-ignore
+  adapter,
   providers: [
     {
       id: "authorizer",
@@ -57,19 +64,23 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: "openid email profile",
-        }
+        },
       },
-      checks: ['pkce', 'state'],
+      checks: ["pkce", "state"],
       profileUrl: `${env.AUTHORIZER_CLIENT_URL}/userinfo`,
       profile(profile) {
         return {
-          name: profile.nickname ?? profile.given_name ?? profile.preferred_username ?? "",
+          name:
+            profile.nickname ??
+            profile.given_name ??
+            profile.preferred_username ??
+            "",
           id: profile.sub,
           email: profile.email,
           image: profile.picture,
-        }
+        };
       },
-    }
+    },
     /**
      * ...add more providers here
      *

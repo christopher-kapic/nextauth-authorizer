@@ -23,7 +23,7 @@ AUTHORIZER_CLIENT_SECRET="authorizer-client-secret"
 AUTHORIZER_CLIENT_URL="https://demo.authorizer.dev"
 ```
 
-`npm install; npx prisma db generate; npx prisma db push;`
+`npm install; npx prisma generate; npx prisma db push;`
 
 `npm run dev`
 
